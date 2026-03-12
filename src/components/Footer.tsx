@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Github, Twitter, Linkedin, Heart } from 'lucide-react';
+import { Sparkles, Github, Briefcase, Linkedin, Heart } from 'lucide-react';
 
 const footerLinks = {
   product: [
@@ -33,7 +33,7 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Twitter, href: 'https://portfoliowebsite-six-eta.vercel.app/', label: 'Twitter' },
+  { icon: Briefcase, href: 'https://portfoliowebsite-six-eta.vercel.app/', label: 'Portfolio' },
   { icon: Github, href: 'https://github.com/dhruvintejani?tab=repositories', label: 'GitHub' },
   { icon: Linkedin, href: 'https://www.linkedin.com/in/dhruvin-tejani-3155a1368/', label: 'LinkedIn' },
   // { icon: Youtube, href: '#', label: 'YouTube' },
