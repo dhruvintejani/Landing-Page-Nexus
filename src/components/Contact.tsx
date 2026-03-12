@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Send, 
@@ -11,6 +11,9 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { cn } from '../utils/cn';
+
+import emailjs from '@emailjs/browser';
+import { emailjsConfig } from '@/data/emailjsconfig';
 
 interface FormData {
   name: string;
@@ -37,6 +40,7 @@ const Contact = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<FormStatus>('idle');
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const lastSentAtRef = useRef<number>(0);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -62,22 +66,44 @@ const Contact = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!validateForm()) return;
+  if (!validateForm()) return;
+  if (status === 'loading') return;
 
-    setStatus('loading');
+  const now = Date.now();
+  if (now - lastSentAtRef.current < 4000) return;
+  lastSentAtRef.current = now;
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+  setStatus('loading');
 
-    // Simulate success (in production, handle actual API response)
+  try {
+    const templateParams = {
+      name: formData.name.trim(),
+      time: new Date().toLocaleString(),
+      message: `Email: ${formData.email}\n\nCompany: ${formData.company || 'Not provided'}\n\n${formData.message.trim()}`,
+      from_name: formData.name.trim(),
+      from_email: formData.email.trim(),
+      reply_to: formData.email.trim(),
+      to_email: 'dhruvintejani21@gmail.com',
+    };
+
+    await emailjs.send(
+      emailjsConfig.serviceId,
+      emailjsConfig.templateId,
+      templateParams,
+      emailjsConfig.publicKey
+    );
+
     setStatus('success');
     setFormData({ name: '', email: '', company: '', message: '' });
 
-    // Reset form after showing success
     setTimeout(() => setStatus('idle'), 5000);
-  };
+  } catch (error) {
+    console.error('EmailJS Error:', error);
+    setStatus('error');
+  }
+};
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -93,19 +119,19 @@ const Contact = () => {
     {
       icon: Mail,
       label: 'Email',
-      value: 'hello@nexus.com',
-      href: 'mailto:hello@nexus.com',
+      value: 'dhruvintejani58242@gmail.com',
+      href: 'mailto:dhruvintejani58242@gmail.com',
     },
     {
       icon: Phone,
       label: 'Phone',
-      value: '+1 (555) 123-4567',
-      href: 'tel:+15551234567',
+      value: '+91 9913871759',
+      href: 'tel:+919913871759',
     },
     {
       icon: MapPin,
       label: 'Office',
-      value: 'San Francisco, CA',
+      value: 'Surat',
       href: '#',
     },
   ];
